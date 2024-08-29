@@ -2,7 +2,7 @@
 The project contains a customizable WheelPicker which is more flexible than android native NumberPicker widget. 
 ## Gradle
 ```groovy
-    compile 'com.super_rabbit.wheel_picker:NumberPicker:1.0.1'
+    implementation 'com.github.jarryleo:NumberPicker:1.0.0'
 ```
 ## Features
 - Customizable font include text size, typeface, color and alignment.

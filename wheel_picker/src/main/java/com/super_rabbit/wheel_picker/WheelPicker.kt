@@ -2,11 +2,11 @@ package com.super_rabbit.wheel_picker
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.os.Build
 import android.util.AttributeSet
-import android.util.Log
 import android.view.*
 import android.view.animation.DecelerateInterpolator
 import android.widget.OverScroller
@@ -143,11 +143,11 @@ class WheelPicker @JvmOverloads constructor(
 
         mSelectedTextColor = attributesArray.getColor(
             R.styleable.WheelPicker_selectedTextColor
-            , ContextCompat.getColor(context, R.color.color_4_blue)
+            , Color.BLUE
         )
         mUnSelectedTextColor = attributesArray.getColor(
             R.styleable.WheelPicker_textColor
-            , ContextCompat.getColor(context, R.color.color_3_dark_blue)
+            , Color.BLACK
         )
         mTextSize = attributesArray.getDimensionPixelSize(R.styleable.WheelPicker_textSize, DEFAULT_TEXT_SIZE)
         val textAlignInt = attributesArray.getInt(R.styleable.WheelPicker_align, 1)
@@ -585,7 +585,7 @@ class WheelPicker @JvmOverloads constructor(
                     mTextPaint.color = mUnSelectedTextColor
                 }
             } else {
-                mTextPaint.color = ContextCompat.getColor(context, R.color.material_grey_300)
+                mTextPaint.color = Color.LTGRAY
             }
 
             canvas.save()

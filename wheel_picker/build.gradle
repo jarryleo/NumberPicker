@@ -1,32 +1,13 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.getkeepsafe.dexcount'
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.novoda.bintray-release'
-
-publish {
-    userOrg = 'superrabbitd'//bintray.com用户名
-    groupId = 'com.super_rabbit.wheel_picker'//jcenter上的路径
-    artifactId = 'NumberPicker'
-    publishVersion = '1.0.1'
-    desc = 'Customized Number Picker'
-}
-
-tasks.withType(Javadoc).all {
-    enabled = false
-}
+apply plugin: 'maven-publish'
 
 android {
-    compileSdkVersion 28
-
+    namespace "com.super_rabbit.wheel_picker"
+    compileSdk 34
     defaultConfig {
-        minSdkVersion 15
-        targetSdkVersion 28
-        versionCode 1
-        versionName "1.0.1"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
+        minSdkVersion 21
+        targetSdkVersion 34
     }
 
     buildTypes {
@@ -36,42 +17,44 @@ android {
         }
     }
 
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
 }
+// 增加上传源码的task
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    archiveClassifier = "sources"
+}
+// publishing 用于定义项目的发布相关配置
+publishing {
+    // 配置maven 仓库
+    repositories { RepositoryHandler handler ->
+        handler.mavenLocal()  // 发布到默认的 本地maven 仓库 ，路径： USER_HOME/.m2/repository/  或 setting.xml中配置的路径
+    }
 
+    // publications 用于定义发布任务的配置块
+    publications {
+        // 这个 aarAndroid 可以随便填，只是一个任务名字而已
+        // MavenPublication必须有，这个是调用的任务类
+        aarAndroid(MavenPublication) {
+            // 这里头是artifacts的配置信息，不填会采用默认的
+//            groupId = "${groupN}"
+//            artifactId = "${artifactIdN}"
+//            version = "${versionN}"
+
+            // 增加上传源码的 task
+            artifact sourceJar
+            // 必须有这个 否则不会上传AAR包  将bundleReleaseAar任务的单个输出文件作为发布的AAR文件。这样，该AAR文件就会成为 MavenPublication 的 artifact 并进行发布
+            afterEvaluate { artifact(tasks.getByName("bundleReleaseAar")) }
+        }
+    }
+}
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-
-    implementation 'androidx.appcompat:appcompat:1.0.2'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.0'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-}
-
-task sourcesJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier = 'sources'
-}
-
-task javadoc(type: Javadoc) {
-    failOnError false
-    source = android.sourceSets.main.java.sourceFiles
-    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    classpath += configurations.compile
-}
-
-// build a jar with javadoc
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
 }

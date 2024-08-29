@@ -5,24 +5,27 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.super_rabbit.demo.R
+import com.super_rabbit.demo.databinding.FragmentBirthdayPickerBinding
 import com.super_rabbit.wheel_picker.DayAdapter
 import com.super_rabbit.wheel_picker.MonthAdapter
 import com.super_rabbit.wheel_picker.OnValueChangeListener
 import com.super_rabbit.wheel_picker.WheelPicker
-import kotlinx.android.synthetic.main.fragment_birthday_picker.*
-import java.util.*
+import java.util.Calendar
+import java.util.GregorianCalendar
 
 class BirthdayPickerFragment : androidx.fragment.app.Fragment() {
 
     val TAG = BirthdayPickerFragment::class.java.simpleName
 
+    private lateinit var binding: FragmentBirthdayPickerBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_birthday_picker, container, false)
+        binding = FragmentBirthdayPickerBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     private val monthAdapter = MonthAdapter()
@@ -31,49 +34,61 @@ class BirthdayPickerFragment : androidx.fragment.app.Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        day.setAdapter(dayAdapter)
-        month.setAdapter(monthAdapter)
+        binding.day.setAdapter(dayAdapter)
+        binding.month.setAdapter(monthAdapter)
 
         val birthday = with(Calendar.getInstance()) {
             Birthday(get(Calendar.DAY_OF_MONTH), get(Calendar.MONTH), get(Calendar.YEAR).minus(18))
         }
 
-        day.scrollToValue(birthday.day.toString())
-        month.scrollToValue(monthAdapter.getValue(birthday.month))
-        year.scrollToValue(birthday.year.toString())
+        binding.day.scrollToValue(birthday.day.toString())
+        binding.month.scrollToValue(monthAdapter.getValue(birthday.month))
+        binding.year.scrollToValue(birthday.year.toString())
 
-        Log.v(TAG, "0 = ${monthAdapter.getValue(0)}  11 = ${monthAdapter.getValue(11)} January = ${monthAdapter.getPosition("January")}  December = ${monthAdapter.getPosition("December")} ")
+        Log.v(
+            TAG,
+            "0 = ${monthAdapter.getValue(0)}  11 = ${monthAdapter.getValue(11)} January = ${
+                monthAdapter.getPosition("January")
+            }  December = ${monthAdapter.getPosition("December")} "
+        )
 
-        day.onValueChange { _, _, newValue ->
+        binding.day.onValueChange { _, _, newValue ->
             Log.v(TAG, "day=$newValue")
         }
 
-        month.onValueChange { _, _, newValue ->
+        binding.month.onValueChange { _, _, newValue ->
             clampDaysByMonth()
             Log.v(TAG, "month=$newValue")
         }
 
-        year.onValueChange { _, _, newValue ->
+        binding.year.onValueChange { _, _, newValue ->
             clampDaysByMonth()
             Log.v(TAG, "year=$newValue")
         }
     }
 
     private fun clampDaysByMonth() {
-        val selectedDay = day.getCurrentItem()
+        val selectedDay = binding.day.getCurrentItem()
 
-        val daysInMonth = GregorianCalendar(year.getCurrentItem().toInt(), monthAdapter.getPosition(month.getCurrentItem()), 1)
+        val daysInMonth = GregorianCalendar(
+            binding.year.getCurrentItem().toInt(),
+            monthAdapter.getPosition(binding.month.getCurrentItem()),
+            1
+        )
             .getActualMaximum(Calendar.DAY_OF_MONTH)
 
         dayAdapter.days.clear()
         dayAdapter.days.addAll((1..daysInMonth).toMutableList())
         dayAdapter.notifyDataSetChanged()
 
-        day.setMaxValue(dayAdapter.getMaxIndex())
+        binding.day.setMaxValue(dayAdapter.getMaxIndex())
 
-        Log.v(TAG, "scroll to selectedDay=$selectedDay daysInMonth=$daysInMonth dayAdapter=${dayAdapter.getMaxIndex()}")
+        Log.v(
+            TAG,
+            "scroll to selectedDay=$selectedDay daysInMonth=$daysInMonth dayAdapter=${dayAdapter.getMaxIndex()}"
+        )
 
-        day.setValue(selectedDay)
+        binding.day.setValue(selectedDay)
     }
 
     companion object {
@@ -108,6 +123,7 @@ open class SimpleOnValueChangeListener : OnValueChangeListener {
 
 inline fun WheelPicker.onValueChange(crossinline block: (picker: WheelPicker, oldValue: String, newValue: String) -> Unit) {
     setOnValueChangedListener(object : SimpleOnValueChangeListener() {
-        override fun onValueChange(picker: WheelPicker, oldVal: String, newVal: String) = block(picker, oldVal, newVal)
+        override fun onValueChange(picker: WheelPicker, oldVal: String, newVal: String) =
+            block(picker, oldVal, newVal)
     })
 }

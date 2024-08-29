@@ -4,28 +4,30 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.super_rabbit.demo.R
+import com.super_rabbit.demo.databinding.FragmentDateAndTimePikcerBinding
 import com.super_rabbit.demo.wheel_picker_adapters.WPAMPMPickerAdapter
 import com.super_rabbit.demo.wheel_picker_adapters.WPDayPickerAdapter
 import com.super_rabbit.demo.wheel_picker_adapters.WPHoursPickerAdapter
 import com.super_rabbit.demo.wheel_picker_adapters.WPMinutesPickerAdapter
-import com.super_rabbit.wheel_picker.WheelPicker
 
 class DateAndTimePickerFragment : androidx.fragment.app.Fragment() {
+
+    private lateinit var binding: FragmentDateAndTimePikcerBinding
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_date_and_time_pikcer, container, false)
+        binding = FragmentDateAndTimePikcerBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        view.findViewById<WheelPicker>(R.id.date_picker).setAdapter(WPDayPickerAdapter())
-        view.findViewById<WheelPicker>(R.id.hour_picker).setAdapter(WPHoursPickerAdapter())
-        view.findViewById<WheelPicker>(R.id.minutes_picker).setAdapter(WPMinutesPickerAdapter())
-        view.findViewById<WheelPicker>(R.id.am_pm_picker).setAdapter(WPAMPMPickerAdapter())
+        binding.datePicker.setAdapter(WPDayPickerAdapter())
+        binding.hourPicker.setAdapter(WPHoursPickerAdapter())
+        binding.minutesPicker.setAdapter(WPMinutesPickerAdapter())
+        binding.amPmPicker.setAdapter(WPAMPMPickerAdapter())
     }
 
     companion object {

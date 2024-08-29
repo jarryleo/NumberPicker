@@ -11,7 +11,7 @@ val curDate = Date(System.currentTimeMillis())
 
 class WPDayPickerAdapter : WheelAdapter() {
 
-    val simpleDateFormat = SimpleDateFormat("MMM d, yyyy")
+    private val simpleDateFormat = SimpleDateFormat("MMM d, yyyy")
 
     //get item value based on item position in wheel
     override fun getValue(position: Int): String {
@@ -24,7 +24,7 @@ class WPDayPickerAdapter : WheelAdapter() {
         if (position == 1)
             return "Tomorrow"
         val rightNow = Calendar.getInstance()
-        rightNow.time = curDate;
+        rightNow.time = curDate
         rightNow.add(Calendar.DATE, position)
 
 
